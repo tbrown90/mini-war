@@ -10,12 +10,19 @@
         <title>Mini War</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Mini War</h1>
-        </div>
-		
         <script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="vendor/phaser/phaser.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" src="js/utilities.js"></script>
+		
+		<!-- LOAD GAME STATES -->
+		<script type="text/javascript" src="js/GameStates/boot.js"></script>
+		<script type="text/javascript" src="js/GameStates/preload.js"></script>
+		<script type="text/javascript" src="js/GameStates/mainmenu.js"></script>
+		<script type="text/javascript" src="js/GameStates/play.js"></script>
+		
+		<!-- Load the Game -->
+		<script type="text/javascript" src="js/game.js"></script>
         <script type="text/javascript">
             app.initialize();
         </script>
