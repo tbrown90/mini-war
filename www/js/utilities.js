@@ -14,31 +14,24 @@ function getHeight() {
 	return height;
 }
 
-function drawRect(x, y, width, height, borderColor, borderWidth, fillColor) {
-	if (borderColor === undefined) {
-		borderColor = 0xFFFFFF;	
-	}
-	
-	if (borderWidth === undefined) {
-		borderWidth = 1;	
-	}
-	
-	if (fillColor) {
-		graphics.beginFill(fillColor);	
-	}
-	
-	graphics.lineStyle(borderWidth, borderColor, 1);
-    graphics.drawRect(x, y, width, height);
-	
-	if (fillColor) {
-		graphics.endFill();	
-	}
-	
-	return new Phaser.Rectangle(x, y, width, height);
+function loadScript(url, callback) {
+	// Adding the script tag to the head as suggested before
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    // Then bind the event to the callback function.
+    // There are several events for cross browser compatibility.
+    script.onreadystatechange = callback;
+    script.onload = callback;
+
+    // Fire the loading
+    head.appendChild(script);
 }
 
 var utilities = {
-	drawRect: drawRect,
 	getWidth: getWidth,
-	getHeight: getHeight
+	getHeight: getHeight,
+	loadScript: loadScript
 };

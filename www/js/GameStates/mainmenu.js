@@ -27,9 +27,20 @@ mainMenu.prototype = {
 		var cY = game.world.centerY;
 		var w = 400;
 		var h = 100;
-		playButton = utilities.drawRect(cX - w / 2, cY - h/2, w, h, 0x0000FF, 2, 0xFF0000);
+		var rectParams = {
+			x: cX - w / 2,
+			y: cY - h / 2,
+			width: w,
+			height: h,
+			borderColor: 0x0000ff,
+			borderWidth: 2,
+			fillColor: 0xff0000,
+			style: { font: "65px Arial", fill: "#ffffff", align: "center" },
+			text: "Hello World",
+			anchor: 0.5
+		};
 		
-		console.log('This: ', this);
+		playButton = new Phaser.TextButton(rectParams);
 	},
 	
 	shutdown: function shutdown() {
