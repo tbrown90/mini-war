@@ -16,8 +16,16 @@ var app = {
     },
     
 	loadScripts: function loadScripts() {
+        var loadedCount = 0;
+        function loadCallback() {
+            loadedCount++;
+            if (loadedCount === scripts.length) {
+                gameStart();   
+            }
+        }
+        
 		for (var i = 0; i < scripts.length; ++i) {
-			utilities.loadScript(scripts[i]);	
+			utilities.loadScript(scripts[i], loadCallback);	
 		}
 	}, 
 	

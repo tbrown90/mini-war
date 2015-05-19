@@ -45,6 +45,11 @@ mainMenu.prototype = {
 	
 	shutdown: function shutdown() {
 		console.log("MainMenu State: Shutdown");
-	}
+	},
+    
+    render: function render() {
+        graphics.clear();
+        playButton.render();
+    }
 }
 

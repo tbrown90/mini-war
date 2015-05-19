@@ -1,7 +1,13 @@
 var play = function play(game) {
 	console.log("Play State");
 };
-  
+ 
+var board = [];
+
+function createBoard() {
+    
+}
+
 play.prototype = {	
   	create: function create() {
 		console.log("Play State: Create");
@@ -65,5 +71,9 @@ play.prototype = {
 	
 	shutdown: function shutdown() {
 		console.log("Play State: Shutdown");
-	}
+	},
+    
+    render: function render() {
+        graphics.clear();
+    }
 }

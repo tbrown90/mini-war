@@ -9,4 +9,6 @@ game.state.add('Preload', preload);
 game.state.add('MainMenu', mainMenu);
 game.state.add('Play', play);
 
-game.state.start('Boot');
+function gameStart() {
+    game.state.start('Boot');
+}
