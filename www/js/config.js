@@ -1,3 +1,4 @@
 var config = {
-	tileSize: 50
+	boardWidth: 10,
+    boardHeight: 5
 };

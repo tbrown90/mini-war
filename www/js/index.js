@@ -6,6 +6,7 @@ var scripts = [
 	'js/game.js',
 	'js/UI/UIRect.js',
 	'js/UI/UIHex.js',
+    'js/UI/Board.js',
 	'js/UI/TextButton.js'
 ];
 
@@ -20,7 +21,12 @@ var app = {
         function loadCallback() {
             loadedCount++;
             if (loadedCount === scripts.length) {
-                gameStart();   
+                var interval = setInterval(function start() {
+                    if (boot && preload && mainMenu && play) {
+                        gameStart();
+                        clearInterval(interval);
+                    }
+                }, 250);
             }
         }
         
