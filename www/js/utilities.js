@@ -30,8 +30,52 @@ function loadScript(url, callback) {
     head.appendChild(script);
 }
 
+function worldPositionToTilePosition(x, y, tileWidth, tileHeight) {
+	var row = Math.floor(y / tileHeight);
+	var rowIsEven = row % 2 === 0;
+	var column = 0;
+
+	var halfWidth = tileWidth / 2;
+	if (rowIsEven) {
+		column = Math.floor((x - halfWidth) / tileWidth);
+	} else {
+		column = Math.floor(x / tileWidth);
+	}
+
+	var relY = y - (row * tileHeight);
+	var relX = 0;
+
+	if (rowIsEven) {
+		relX = (x - (column * tileWidth)) - halfWidth;
+	} else {
+		relX = x - (column * tileWidth);
+	}
+
+	var c = tileHeight;
+	var m = c / halfWidth;
+
+	if (relY < (-m * relX) + c) {
+		row--;
+		if (!rowIsEven) {
+			column--;
+		}
+
+	} else if (relY < (m * relX) - c) {
+		row--;
+		if (rowIsEven) {
+			column++;
+		}
+	}
+	
+	return {
+		row: row,
+		column: column
+	}
+}
+
 var utilities = {
 	getWidth: getWidth,
 	getHeight: getHeight,
-	loadScript: loadScript
+	loadScript: loadScript,
+	worldPositionToTilePosition: worldPositionToTilePosition
 };

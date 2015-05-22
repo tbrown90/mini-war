@@ -1,7 +1,4 @@
-var width = getWidth();
-var height = getHeight();
-
-var game = new Phaser.Game(width, height, Phaser.AUTO, '');
+var game = new Phaser.Game(config.gameWidth, config.gameHeight, Phaser.AUTO, '');
 var graphics;
 
 function gameStart() {

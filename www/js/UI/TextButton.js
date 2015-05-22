@@ -1,4 +1,4 @@
-function rectText(params) {
+Phaser.TextButton = function rectText(params) {
 	function contains(x, y) {
 		return rect.contains(x, y);	
 	}
@@ -21,6 +21,4 @@ function rectText(params) {
 		contains: contains,
         render: render
 	};
-}
-
-Phaser.TextButton = rectText;
+};

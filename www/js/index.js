@@ -7,6 +7,7 @@ var scripts = [
 	'js/UI/UIRect.js',
 	'js/UI/UIHex.js',
     'js/UI/Board.js',
+	'js/UI/HexTile.js',
 	'js/UI/TextButton.js'
 ];
 
