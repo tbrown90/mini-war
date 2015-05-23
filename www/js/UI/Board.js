@@ -83,6 +83,7 @@ Phaser.Board.prototype.update = function update() {
 }
 
 Phaser.Board.prototype.clickBoard = function clickBoard(pointer) {
+	
 	var x = pointer.positionDown.x - this.xOffset;
 	var y = pointer.positionDown.y - this.yOffset;
 
@@ -95,4 +96,42 @@ Phaser.Board.prototype.clickBoard = function clickBoard(pointer) {
 
 	var tile = this.tiles[pos.row][pos.column];
 	tile.click();
+}
+
+Phaser.Board.prototype.placeTroops = function placeTroops(x, y, id, numTroops) {
+	var tile = this.tiles[y][x];
+	if (tile.ownerId === -1 || tile.ownerId === id) {
+		tile.numTroops += numTroopers;
+		tile.ownerId = id;
+		tile.hex.renderParams.fillColor = config.playerColors[id];
+		return true;
+	}
+	
+	return false;
+};
+
+Phaser.Board.prototype.placeTrooper = function placeTrooper(pointer, id, numTroopers) {
+	if (numTroopers <= 0) {
+		return false;	
+	}
+	
+	var x = pointer.positionDown.x - this.xOffset;
+	var y = pointer.positionDown.y - this.yOffset;
+
+	var pos = utilities.worldPositionToTilePosition(x, y, this.tileWidth, this.tileHeight);
+	
+	if (pos.row < 0 || pos.row >= this.height ||
+		pos.column < 0 || pos.column >= this.width) {
+		return false;
+	}
+	
+	return this.placeTroops(pos.column, pos.row, id, numTroopers);
+}
+
+Phaser.Board.prototype.deselect = function deselect() {
+	for (var y = 0; y < this.height; ++y) {
+		for (var x = 0; x < this.width; ++x) {
+			this.tiles[y][x].hex.selected = false;
+		}
+	}
 }

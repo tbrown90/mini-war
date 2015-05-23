@@ -8,7 +8,10 @@ var scripts = [
 	'js/UI/UIHex.js',
     'js/UI/Board.js',
 	'js/UI/HexTile.js',
-	'js/UI/TextButton.js'
+	'js/UI/TextButton.js',
+	'js/Player/Actor.js',
+	'js/Player/Player.js',
+	'js/Player/AI.js'
 ];
 
 var app = {

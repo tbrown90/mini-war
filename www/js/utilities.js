@@ -73,9 +73,14 @@ function worldPositionToTilePosition(x, y, tileWidth, tileHeight) {
 	}
 }
 
+function randomRange(min, max) {
+	return Math.random() * (max - min) + min;
+}
+
 var utilities = {
 	getWidth: getWidth,
 	getHeight: getHeight,
 	loadScript: loadScript,
-	worldPositionToTilePosition: worldPositionToTilePosition
+	worldPositionToTilePosition: worldPositionToTilePosition,
+	randomRange: randomRange
 };

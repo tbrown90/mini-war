@@ -9,18 +9,23 @@ Phaser.HexTile = function hexTile(hexParams) {
 	}
 	
 	function update() {
-		text.text = this.numTroops + '';
+		var text = '-';
+		if (this.numTroops > 0) {
+			text = this.numTroops + '';	
+		}
+		
+		this.troopText.text = text;
 	}
 	
 	var uiHex = new Phaser.UIHex(hexParams);
-	var text = game.add.text(hexParams.center.x, hexParams.center.y, '', hexParams.textStyle);
-	text.anchor.set(0.5, 0.5);
+	var troopText = game.add.text(hexParams.center.x, hexParams.center.y, '', hexParams.textStyle);
+	troopText.anchor.set(0.5, 0.5);
 	
 	return {
 		hex: uiHex,
-		text: text,
+		troopText: troopText,
 		ownerId: -1,
-		numTroops: 100,
+		numTroops: 0,
 		click: click,
 		render: render,
 		update: update
