@@ -98,34 +98,48 @@ Phaser.Board.prototype.clickBoard = function clickBoard(pointer) {
 	tile.click();
 }
 
-Phaser.Board.prototype.placeTroops = function placeTroops(x, y, id, numTroops) {
+Phaser.Board.prototype.placeTroops = function placeTroops(x, y, player) {
 	var tile = this.tiles[y][x];
-	if (tile.ownerId === -1 || tile.ownerId === id) {
-		tile.numTroops += numTroopers;
-		tile.ownerId = id;
-		tile.hex.renderParams.fillColor = config.playerColors[id];
+	if (tile.ownerId === -1 || tile.ownerId === player.id) {
+        var numTroops = player.placeTrooper();
+        
+		tile.numTroops += numTroops;
+        
+        if (numTroops > 0) {            
+            tile.ownerId = player.id;
+            tile.hex.renderParams.fillColor = config.playerColors[player.id];            
+        }
 		return true;
 	}
 	
 	return false;
 };
 
-Phaser.Board.prototype.placeTrooper = function placeTrooper(pointer, id, numTroopers) {
-	if (numTroopers <= 0) {
-		return false;	
-	}
-	
+Phaser.Board.prototype.placeTrooper = function placeTrooper(pointer, player) {
 	var x = pointer.positionDown.x - this.xOffset;
 	var y = pointer.positionDown.y - this.yOffset;
-
+    
 	var pos = utilities.worldPositionToTilePosition(x, y, this.tileWidth, this.tileHeight);
 	
 	if (pos.row < 0 || pos.row >= this.height ||
 		pos.column < 0 || pos.column >= this.width) {
 		return false;
 	}
-	
-	return this.placeTroops(pos.column, pos.row, id, numTroopers);
+    
+	return this.placeTroops(pos.column, pos.row, player);
+}
+
+Phaser.Board.prototype.numTilesForPlayer = function getNumTilesForPlayer(id) {
+    var count = 0;
+    for (var y = 0; y < this.tiles.length; ++y) {
+        for (var x = 0; x < this.tiles[y].length; ++x) {
+            if (this.tiles[y][x].ownerId === id) {
+                count++;   
+            }
+        }
+    }
+    
+    return count;
 }
 
 Phaser.Board.prototype.deselect = function deselect() {

@@ -11,25 +11,22 @@ var AI = function AI(id) {
 	}
 	
 	function updatePlaceTrooper(playController) {
-		var self = this;
-		setTimeout(function place() {
-			var done = false;
-			var troops = actor.placeTrooper();
-			
-			var x = -1;
-			var y = -1;
-			while (!done) {
-				y = utilities.randomRange(0, playController.board.tiles.length);
-				x = utilities.randomRange(0, playController.board.tiles[y].length);
-				
-				var tile = playController.board.tiles[y][x];
-				if (tile.ownerId === -1 || tile.ownerId === self.id) {
-					done = true;	
-				}
-			}
-			
-			playController.board.placeTroops(x, y, self.id, troops);
-		}, 500);
+        var done = false;
+        
+        var x = -1;
+        var y = -1;
+        while (!done) {            
+            y = utilities.randomRange(0, playController.board.tiles.length);
+            x = utilities.randomRange(0, playController.board.tiles[y].length);
+
+            var tile = playController.board.tiles[y][x];
+            if (tile.ownerId === -1 || tile.ownerId === self.id) {
+                done = true;	
+            }
+        }
+
+        playController.board.placeTroops(x, y, actor);
+        playController.nextTurn();
 	}
 	
 	var actor = new Actor(id);

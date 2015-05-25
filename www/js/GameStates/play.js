@@ -55,7 +55,7 @@ play.prototype = {
 		console.log("Play State: Update");
 		this.board.update();
 		
-		var player = getPlayer();
+		var player = this.getPlayer();
 		if (player.isAi) {
 			player.update(this);
 		}
@@ -85,7 +85,12 @@ play.prototype = {
 		this.setText(text);
 		
 		this.board.deselect();
-	}
+        
+        if (this.gameState === GameState.playerSetup && this.allTroopsPlaced() === true) {
+            console.log('Playing');
+            this.gameState = GameState.playing;   
+        }
+	},
 		
 	//UTILITIES
 	setText: function setText(text) {
@@ -93,14 +98,23 @@ play.prototype = {
 	},
 	
 	getPlayer: function getPlayer() {
-		return this.players[this.currentPlayer];	
+		return this.players[this.currentTurn];	
 	},
 	
 	canClickTile: function canClickTile() {
 		return this.players[this.currentTurn].isAi === false;	
 	},
-	
-		
+    
+    allTroopsPlaced: function allTroopsPlaced() {
+        for (var i = 0; i < this.players.length; ++i) {
+            if (this.players[i].troopsToPlace != 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    },
+			
 	//INTERACTIVES
 	clickBoard: function clickBoard(pointer) {
 		if (this.canClickTile() === false) {
@@ -115,8 +129,10 @@ play.prototype = {
 				break;
 				
 			case GameState.playerSetup:
-				var troops = player.placeTrooper();
-				this.board.placeTrooper(pointer, player.id, troops);
+				var placed = this.board.placeTrooper(pointer, player);
+                if (placed === true) {
+                    this.nextTurn();
+                }
 				break;				
 		}
 	}
