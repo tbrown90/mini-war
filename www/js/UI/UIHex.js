@@ -9,12 +9,9 @@ function uiHex(hexParams) {
 			this.renderParams.fillColor = 0xFFFFFF;
 		}
 
-		if (this.renderParams.borderColor !== undefined && this.renderParams.borderWidth !== undefined) {
-			graphics.lineStyle(this.renderParams.borderWidth, this.renderParams.borderColor, 1);
-		}
-
-		var fillColor = this.selected ? this.renderParams.selectColor : this.renderParams.fillColor;	
+        graphics.lineStyle(this.renderParams.borderWidth, this.renderParams.borderColor, 1);
 		
+        var fillColor = this.selected ? this.renderParams.selectColor : this.renderParams.fillColor;
 		graphics.beginFill(fillColor);
 		graphics.drawPolygon(this.points);
 		graphics.endFill();

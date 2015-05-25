@@ -28,6 +28,8 @@ Phaser.HexTile = function hexTile(hexParams) {
 		numTroops: 0,
 		click: click,
 		render: render,
-		update: update
+		update: update,
+        x: hexParams.x,
+        y: hexParams.y
 	};
 }

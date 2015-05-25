@@ -17,7 +17,7 @@ var config = {
 	hexBorderColor: 0x000000,
 	hexBorderWidth: 2,
 	hexFillColor: 0xeeeeee,
-	hexSelectColor: 0x999999,
+	hexSelectColor: 0xffff00,
 
 	numPlayers: 2,
 	numAi: 1,

@@ -6,6 +6,7 @@ var AI = function AI(id) {
 				updatePlaceTrooper(playController);
 				break;
 			case GameState.playing:
+                playController.nextTurn();
 				break;
 		}
 	}
@@ -15,23 +16,36 @@ var AI = function AI(id) {
         
         var x = -1;
         var y = -1;
-        while (!done) {            
-            y = utilities.randomRange(0, playController.board.tiles.length);
-            x = utilities.randomRange(0, playController.board.tiles[y].length);
-
-            var tile = playController.board.tiles[y][x];
-            if (tile.ownerId === -1 || tile.ownerId === self.id) {
-                done = true;	
-            }
+        var shouldBeNewTile = Math.random() < actor.newTileChance;
+        
+        var emptyTiles = playController.board.getTilesForPlayer(-1);
+        var ownedTiles = playController.board.getTilesForPlayer(actor.id);
+        if (emptyTiles.length === 0 && ownedTiles.length === 0) {
+            actor.troopsToPlace--;
+            playController.nextTurn();
+            console.error('Tried to place tile when no empty tiles or owned tiles.');
         }
 
-        playController.board.placeTroops(x, y, actor);
+        var tile = undefined;
+
+        if (shouldBeNewTile || ownedTiles.length === 0) {
+            tile = emptyTiles[utilities.randomRange(0, emptyTiles.length)];
+        } else {
+            tile = ownedTiles[utilities.randomRange(0, ownedTiles.length)];
+        }
+        
+        playController.board.placeTroops(tile.x, tile.y, actor);
+        
+        var numTiles = playController.board.numTilesForPlayer(actor.id);
+        actor.newTileChance *= 0.95;
+        
         playController.nextTurn();
 	}
 	
 	var actor = new Actor(id);
 	actor.isAi = true;
-	
+	actor.newTileChance = 0.9;
+    
 	actor.update = update;
 	return actor;
 }

@@ -16,6 +16,7 @@ Phaser.Board = function createBoard() {
 	this.tiles = [];
 	this.xOffset = (w - (distX * this.width) - halfDistX) / 2 + config.boardRect.x;
 	this.yOffset = config.boardRect.y;
+    this.tileSelected = false;
 
 	var hexParams = {
 		size: tileSize,
@@ -36,10 +37,11 @@ Phaser.Board = function createBoard() {
 
 		for (var x = 0; x < this.width; ++x) {
 			var center = new PIXI.Point((x + 1) * distX + xOff, (y + 1) * distY + yOff);
-
 			hexParams.visible = true;
-
 			hexParams.center = center;
+            
+            hexParams.x = x;
+            hexParams.y = y;
 
 			this.tiles[y].push(Phaser.HexTile(hexParams));
 		}
@@ -82,7 +84,7 @@ Phaser.Board.prototype.update = function update() {
 	}
 }
 
-Phaser.Board.prototype.clickBoard = function clickBoard(pointer) {
+Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
 	
 	var x = pointer.positionDown.x - this.xOffset;
 	var y = pointer.positionDown.y - this.yOffset;
@@ -94,8 +96,70 @@ Phaser.Board.prototype.clickBoard = function clickBoard(pointer) {
 		return;
 	}
 
-	var tile = this.tiles[pos.row][pos.column];
-	tile.click();
+    var tile = this.tiles[pos.row][pos.column];
+    if (this.tileSelected === false) {
+        if (tile.ownerId === playerId && tile.numTroops > 0) {
+            tile.click();
+            this.tileSelected = true;
+        }
+    } else {
+        var fromTile = this.getSelectedTile();
+        
+        if (this.canMoveToTile(tile, fromTile)) {
+            
+            //ATTACK
+            if (tile.ownerId === playerId || tile.ownerId === -1) {
+                tile.numTroops += fromTile.numTroops;
+                tile.hex.renderParams.fillColor = fromTile.hex.renderParams.fillColor;
+                tile.ownerId = playerId;
+            } else {
+                var troops = tile.numTroops;
+                tile.numTroops -= fromTile.numTroops;
+                
+                if (tile.numTroops < 0) {
+                    tile.ownerId = fromTile.ownerId;
+                    tile.hex.renderParams.fillColor = fromTile.hex.renderParams.fillColor;
+                    tile.numTroops = Math.abs(tile.numTroops);
+                }
+            }
+            
+            fromTile.numTroops = 0;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+Phaser.Board.prototype.getSelectedTile = function getSelectedTile(tile) {
+    for (var y = 0; y < this.tiles.length; ++y) {
+        for (var x = 0; x < this.tiles[y].length; ++x) {
+            if (this.tiles[y][x].hex.selected === true) {
+                return this.tiles[y][x];
+            }
+        }
+    }
+}
+
+Phaser.Board.prototype.canMoveToTile = function canMoveToTile(tile, fromTile) {
+    var distX = fromTile.x - tile.x;
+    var distY = fromTile.y - tile.y;
+    
+    if ((distX === 0 && distY === 0) || Math.abs(distX) > 1 || Math.abs(distY) > 1) {
+        return false;   
+    }
+    
+    if (fromTile.y % 2 === 0) {
+        if (distX > 0 && distY !== 0) {
+            return false;   
+        }
+    } else {
+        if (distX < 0 && distY !== 0) {
+            return false;   
+        }
+    }
+    
+    return true;
 }
 
 Phaser.Board.prototype.placeTroops = function placeTroops(x, y, player) {
@@ -142,10 +206,26 @@ Phaser.Board.prototype.numTilesForPlayer = function getNumTilesForPlayer(id) {
     return count;
 }
 
+Phaser.Board.prototype.getTilesForPlayer = function getTilesForPlayer(id) {
+    var tiles = [];
+    
+    for (var y = 0; y < this.tiles.length; ++y) {
+        for (var x = 0; x < this.tiles[y].length; ++x) {
+            if (this.tiles[y][x].ownerId === id) {
+                tiles.push(this.tiles[y][x]);
+            }
+        }
+    }
+    
+    return tiles;
+}
+
 Phaser.Board.prototype.deselect = function deselect() {
 	for (var y = 0; y < this.height; ++y) {
 		for (var x = 0; x < this.width; ++x) {
 			this.tiles[y][x].hex.selected = false;
 		}
 	}
+    
+    this.tileSelected = false;
 }

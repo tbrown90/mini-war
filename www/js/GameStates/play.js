@@ -15,27 +15,18 @@ play.prototype = {
 	
 		this.gameState = GameState.initializing;	
 		this.initializeBoard();
+        this.setupUi();
 		this.initializePlayers();
 	},
 	
 	//INITIALIZSERS
 	initializeBoard: function initializeBoard() {
-		var centerX = game.world.width / 2;
-		var y = 25;
-		var textStyle = {
-			font: "24px Arial", 
-			fill: "#ccc", 
-			align: "center"
-		};
-		this.gameText = game.add.text(centerX, y, 'Initializing Board', textStyle);
-		this.gameText.anchor.set(0.5, 0.5);
-		
 		this.board = new Phaser.Board();
 		game.input.onUp.add(this.clickBoard, this);
 	},
 	
 	initializePlayers: function initializePlayers() {
-		this.setText('Initializing Players');
+		this.updateText();
 		
 		this.players = [];
 		for (var i = 0; i < config.numPlayers; ++i) {
@@ -51,6 +42,29 @@ play.prototype = {
 		this.gameState = GameState.playerSetup;
 	},
 
+    setupUi: function setupUi() {
+        var centerX = game.world.width / 2;
+		var y = 25;
+		var gameTextStyle = {
+			font: "24px Arial", 
+			fill: "#ccc", 
+			align: "center"
+		};
+        this.gameText = game.add.text(centerX, y, 'Initializing Board', gameTextStyle);
+		this.gameText.anchor.set(0.5, 0.5);
+        
+        this.playerOneText = game.add.text(25, y, 'Player One', gameTextStyle);
+        this.playerOneText.anchor.set(0, 0.5);
+        this.playerOneTextScore = game.add.text(25, y + 28, '0', gameTextStyle);
+        this.playerOneTextScore.anchor.set(0, 0.5);
+        
+        
+        this.playerTwoText = game.add.text(game.world.width - 25, y, 'Player Two', gameTextStyle);
+        this.playerTwoText.anchor.set(1, 0.5);
+        this.playerTwoTextScore = game.add.text(game.world.width - 25, y + 28, '0', gameTextStyle);
+        this.playerTwoTextScore.anchor.set(1, 0.5);
+    },
+    
 	update: function update() {
 		console.log("Play State: Update");
 		this.board.update();
@@ -80,9 +94,7 @@ play.prototype = {
 			this.currentTurn = 0;	
 		}
 		
-		var text = this.players[this.currentTurn].isAi ? 'AI ' : 'Player ';
-		text += this.currentTurn + '\'s turn';
-		this.setText(text);
+		this.updateText();
 		
 		this.board.deselect();
         
@@ -93,8 +105,27 @@ play.prototype = {
 	},
 		
 	//UTILITIES
-	setText: function setText(text) {
-		this.gameText.text = text;
+	updateText: function updateText() {
+		var text = "";
+        switch (this.gameState) {
+            case GameState.initializing:
+                text = "Initializing Board";
+                break;
+            case GameState.playerSetup:
+                text = "Troop Setup";
+                break;
+            case GameState.playing:
+                text = "Playing";
+                break;
+        }
+        
+        this.gameText.text = text;
+        
+        var p1Score = this.board.numTilesForPlayer(0);
+        var p2Score = this.board.numTilesForPlayer(1);
+        
+        this.playerOneTextScore.text = p1Score;
+        this.playerTwoTextScore.text = p2Score;
 	},
 	
 	getPlayer: function getPlayer() {
@@ -124,8 +155,9 @@ play.prototype = {
 		var player = this.players[this.currentTurn];
 		switch (this.gameState) {
 			case GameState.playing:
-				this.board.clickBoard(pointer, this);
-				this.nextTurn();
+				if (this.board.clickBoard(pointer, player.id)) {
+                    this.nextTurn();    
+                }
 				break;
 				
 			case GameState.playerSetup:
