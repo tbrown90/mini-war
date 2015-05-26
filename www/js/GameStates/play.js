@@ -28,12 +28,13 @@ play.prototype = {
 	initializePlayers: function initializePlayers() {
 		this.updateText();
 		
+        var numNonAi = config.numPlayers - config.numAi;
 		this.players = [];
 		for (var i = 0; i < config.numPlayers; ++i) {
-			if (i < config.numAi) {
-				this.players.push(new AI(i));	
-			} else {
+			if (i < numNonAi) {
 				this.players.push(new Player(i));	
+			} else {
+				this.players.push(new AI(i));	
 			}
 		}
 		
