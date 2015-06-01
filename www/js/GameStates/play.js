@@ -162,7 +162,7 @@ play.prototype = {
 				break;
 				
 			case GameState.playerSetup:
-				var placed = this.board.placeTrooper(pointer, player);
+				var placed = this.board.clickPlaceTrooper(pointer, player);
                 if (placed === true) {
                     this.nextTurn();
                 }

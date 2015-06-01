@@ -6,7 +6,8 @@ var AI = function AI(id) {
 				updatePlaceTrooper(playController);
 				break;
 			case GameState.playing:
-                playController.nextTurn();
+				updateMoveTroops(playController);
+//                playController.nextTurn();
 				break;
 		}
 	}
@@ -40,6 +41,14 @@ var AI = function AI(id) {
         actor.newTileChance *= 0.95;
         
         playController.nextTurn();
+	}
+	
+	function updateMoveTroops(playController) {
+		var myTiles = playController.board.getTilesForPlayer(actor.id);
+		var tile = utilities.getTileWithMostTroops(myTiles);
+		
+		
+		playController.nextTurn();
 	}
 	
 	var actor = new Actor(id);

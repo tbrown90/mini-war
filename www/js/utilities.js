@@ -77,10 +77,28 @@ function randomRange(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
+function getTileWithMostTroops(tiles) {
+	var tile;
+	
+	for (var i = 0; i < tiles; ++i) {
+		if (tile === undefined || tiles[i].numTroops > tile.numTroops) {
+			tile = tiles[i];	
+			continue;
+		}
+		
+		if (tiles[i].numTroops === tile.numTroops && Math.random() > 0.5) {	
+			tile = tiles[i];
+		}
+	}
+	
+	return tile;
+}
+
 var utilities = {
 	getWidth: getWidth,
 	getHeight: getHeight,
 	loadScript: loadScript,
 	worldPositionToTilePosition: worldPositionToTilePosition,
-	randomRange: randomRange
+	randomRange: randomRange,
+	getTileWithMostTroops: getTileWithMostTroops
 };

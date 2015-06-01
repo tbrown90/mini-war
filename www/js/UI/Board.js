@@ -56,6 +56,7 @@ Phaser.Board = function createBoard() {
 	return this;
 }
 
+// Core Board Functions
 Phaser.Board.prototype.render = function renderBoard() {
 	var boardParams = {
 		borderColor: config.boardBoarderColor,
@@ -84,6 +85,17 @@ Phaser.Board.prototype.update = function update() {
 	}
 }
 
+Phaser.Board.prototype.deselect = function deselect() {
+	for (var y = 0; y < this.height; ++y) {
+		for (var x = 0; x < this.width; ++x) {
+			this.tiles[y][x].hex.selected = false;
+		}
+	}
+    
+    this.tileSelected = false;
+}
+
+//Interaction
 Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
 	
 	var x = pointer.positionDown.x - this.xOffset;
@@ -131,6 +143,38 @@ Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
     return false;
 }
 
+Phaser.Board.prototype.placeTroops = function placeTroops(x, y, player) {
+	var tile = this.tiles[y][x];
+	if (tile.ownerId === -1 || tile.ownerId === player.id) {
+        var numTroops = player.placeTrooper();
+        
+		tile.numTroops += numTroops;
+        
+        if (numTroops > 0) {            
+            tile.ownerId = player.id;
+            tile.hex.renderParams.fillColor = config.playerColors[player.id];            
+        }
+		return true;
+	}
+	
+	return false;
+};
+
+Phaser.Board.prototype.clickPlaceTrooper = function clickPlaceTrooper(pointer, player) {
+	var x = pointer.positionDown.x - this.xOffset;
+	var y = pointer.positionDown.y - this.yOffset;
+    
+	var pos = utilities.worldPositionToTilePosition(x, y, this.tileWidth, this.tileHeight);
+	
+	if (pos.row < 0 || pos.row >= this.height ||
+		pos.column < 0 || pos.column >= this.width) {
+		return false;
+	}
+    
+	return this.placeTroops(pos.column, pos.row, player);
+}
+
+//Utilities
 Phaser.Board.prototype.getSelectedTile = function getSelectedTile(tile) {
     for (var y = 0; y < this.tiles.length; ++y) {
         for (var x = 0; x < this.tiles[y].length; ++x) {
@@ -162,48 +206,8 @@ Phaser.Board.prototype.canMoveToTile = function canMoveToTile(tile, fromTile) {
     return true;
 }
 
-Phaser.Board.prototype.placeTroops = function placeTroops(x, y, player) {
-	var tile = this.tiles[y][x];
-	if (tile.ownerId === -1 || tile.ownerId === player.id) {
-        var numTroops = player.placeTrooper();
-        
-		tile.numTroops += numTroops;
-        
-        if (numTroops > 0) {            
-            tile.ownerId = player.id;
-            tile.hex.renderParams.fillColor = config.playerColors[player.id];            
-        }
-		return true;
-	}
-	
-	return false;
-};
-
-Phaser.Board.prototype.placeTrooper = function placeTrooper(pointer, player) {
-	var x = pointer.positionDown.x - this.xOffset;
-	var y = pointer.positionDown.y - this.yOffset;
-    
-	var pos = utilities.worldPositionToTilePosition(x, y, this.tileWidth, this.tileHeight);
-	
-	if (pos.row < 0 || pos.row >= this.height ||
-		pos.column < 0 || pos.column >= this.width) {
-		return false;
-	}
-    
-	return this.placeTroops(pos.column, pos.row, player);
-}
-
 Phaser.Board.prototype.numTilesForPlayer = function getNumTilesForPlayer(id) {
-    var count = 0;
-    for (var y = 0; y < this.tiles.length; ++y) {
-        for (var x = 0; x < this.tiles[y].length; ++x) {
-            if (this.tiles[y][x].ownerId === id) {
-                count++;   
-            }
-        }
-    }
-    
-    return count;
+    return this.getTilesForPlayer(id).length;
 }
 
 Phaser.Board.prototype.getTilesForPlayer = function getTilesForPlayer(id) {
@@ -218,14 +222,4 @@ Phaser.Board.prototype.getTilesForPlayer = function getTilesForPlayer(id) {
     }
     
     return tiles;
-}
-
-Phaser.Board.prototype.deselect = function deselect() {
-	for (var y = 0; y < this.height; ++y) {
-		for (var x = 0; x < this.width; ++x) {
-			this.tiles[y][x].hex.selected = false;
-		}
-	}
-    
-    this.tileSelected = false;
 }
