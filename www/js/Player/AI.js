@@ -47,6 +47,12 @@ var AI = function AI(id) {
 		var myTiles = playController.board.getTilesForPlayer(actor.id);
 		var tile = utilities.getTileWithMostTroops(myTiles);
 		
+		var neighbors = playController.board.getNeighboringTiles(tile);
+		console.log('Neighbors: ', neighbors);
+		tile.hex.selected = true;
+		
+		var destination = utilities.getTileWithLeastTroops(neighbors, true, actor.id);
+		playController.board.attackTile(tile, destination, actor.id);
 		
 		playController.nextTurn();
 	}

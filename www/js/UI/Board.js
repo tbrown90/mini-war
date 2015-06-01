@@ -96,6 +96,31 @@ Phaser.Board.prototype.deselect = function deselect() {
 }
 
 //Interaction
+Phaser.Board.prototype.attackTile = function attackTile(from, destination, playerId) {
+	if (this.canMoveToTile(destination, from)) { 
+		//ATTACK
+		if (destination.ownerId === playerId || destination.ownerId === -1) {
+			destination.numTroops += from.numTroops;
+			destination.hex.renderParams.fillColor = from.hex.renderParams.fillColor;
+			destination.ownerId = playerId;
+		} else {
+			var troops = destination.numTroops;
+			destination.numTroops -= from.numTroops;
+
+			if (destination.numTroops < 0) {
+				destination.ownerId = from.ownerId;
+				destination.hex.renderParams.fillColor = from.hex.renderParams.fillColor;
+				destination.numTroops = Math.abs(destination.numTroops);
+			}
+		}
+
+		from.numTroops = 0;
+		return true;
+	}
+	
+	return false;
+}
+
 Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
 	
 	var x = pointer.positionDown.x - this.xOffset;
@@ -117,27 +142,9 @@ Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
     } else {
         var fromTile = this.getSelectedTile();
         
-        if (this.canMoveToTile(tile, fromTile)) {
-            
-            //ATTACK
-            if (tile.ownerId === playerId || tile.ownerId === -1) {
-                tile.numTroops += fromTile.numTroops;
-                tile.hex.renderParams.fillColor = fromTile.hex.renderParams.fillColor;
-                tile.ownerId = playerId;
-            } else {
-                var troops = tile.numTroops;
-                tile.numTroops -= fromTile.numTroops;
-                
-                if (tile.numTroops < 0) {
-                    tile.ownerId = fromTile.ownerId;
-                    tile.hex.renderParams.fillColor = fromTile.hex.renderParams.fillColor;
-                    tile.numTroops = Math.abs(tile.numTroops);
-                }
-            }
-            
-            fromTile.numTroops = 0;
-            return true;
-        }
+		var attack = this.attackTile(fromTile, tile, playerId);
+		console.log(attack);
+        return attack;
     }
     
     return false;
@@ -222,4 +229,52 @@ Phaser.Board.prototype.getTilesForPlayer = function getTilesForPlayer(id) {
     }
     
     return tiles;
+}
+
+Phaser.Board.prototype.getNeighboringTiles = function getNeighboringTiles(tile) {
+	var neighbors = [];
+	
+	var x = tile.x;
+	var y = tile.y;
+	var isEven = y % 2 === 0;
+	
+	if (x - 1 >= 0) {
+		neighbors.push(this.tiles[y][x - 1]);
+	}
+	
+	if (x + 1 < this.width) {
+		neighbors.push(this.tiles[y][x + 1]);
+	}
+	
+	if (y - 1 >= 0) {
+		neighbors.push(this.tiles[y - 1][x]);
+	}
+	
+	if (y + 1 < this.height) {
+		neighbors.push(this.tiles[y + 1][x]);	
+	}
+	
+	if (isEven) {
+		if (x + 1 < this.width) {
+			if (y + 1 < this.height) {
+				neighbors.push(this.tiles[y + 1][x + 1]);
+			}
+			
+			if (y - 1 >= 0) {
+				neighbors.push(this.tiles[y - 1][x + 1]);
+			}
+		}
+	} else {
+		if (x - 1 >= 0) {
+			if (y + 1 < this.height) {
+				neighbors.push(this.tiles[y + 1][x - 1]);
+			}
+			
+			if (y - 1 >= 0) {
+				neighbors.push(this.tiles[y - 1][x - 1]);
+			}
+		}
+	}
+	
+	return neighbors;
 }

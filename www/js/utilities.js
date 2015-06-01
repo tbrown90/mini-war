@@ -80,7 +80,7 @@ function randomRange(min, max) {
 function getTileWithMostTroops(tiles) {
 	var tile;
 	
-	for (var i = 0; i < tiles; ++i) {
+	for (var i = 0; i < tiles.length; ++i) {
 		if (tile === undefined || tiles[i].numTroops > tile.numTroops) {
 			tile = tiles[i];	
 			continue;
@@ -94,11 +94,35 @@ function getTileWithMostTroops(tiles) {
 	return tile;
 }
 
+function getTileWithLeastTroops(tiles, mustBeDifferentOwners, ownerId) {
+	var tile;
+	
+	for (var i = 0; i < tiles.length; ++i) {
+		if (tile === undefined || tiles[i].numTroops < tile.numTroops) {
+			if (mustBeDifferentOwners === false || tiles[i].ownerId !== ownerId) {
+				tile = tiles[i];	
+			}
+			continue;
+		}
+		
+		if (tiles[i].numTroops === tile.numTroops && Math.random() > 0.5) {	
+			tile = tiles[i];
+		}
+	}
+	
+	if (tile === undefined && mustBeDifferentOwners) {
+		return getTileWithLeastTroops(tiles, false);	
+	}
+	
+	return tile;
+}
+
 var utilities = {
 	getWidth: getWidth,
 	getHeight: getHeight,
 	loadScript: loadScript,
 	worldPositionToTilePosition: worldPositionToTilePosition,
 	randomRange: randomRange,
-	getTileWithMostTroops: getTileWithMostTroops
+	getTileWithMostTroops: getTileWithMostTroops,
+	getTileWithLeastTroops: getTileWithLeastTroops
 };
