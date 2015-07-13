@@ -100,17 +100,12 @@ Phaser.Board.prototype.attackTile = function attackTile(from, destination, playe
 	if (this.canMoveToTile(destination, from)) { 
 		//ATTACK
 		if (destination.ownerId === playerId || destination.ownerId === -1) {
-			destination.numTroops += from.numTroops;
-			destination.hex.renderParams.fillColor = from.hex.renderParams.fillColor;
-			destination.ownerId = playerId;
+            this.moveToTile(from, destination, destination.numTroops + from.numTroops);
 		} else {
-			var troops = destination.numTroops;
-			destination.numTroops -= from.numTroops;
+            this.resolveCombat(from, destination);
 
-			if (destination.numTroops < 0) {
-				destination.ownerId = from.ownerId;
-				destination.hex.renderParams.fillColor = from.hex.renderParams.fillColor;
-				destination.numTroops = Math.abs(destination.numTroops);
+			if (destination.numTroops <= 0) {
+                this.moveToTile(from, destination, from.numTroops);
 			}
 		}
 
@@ -119,6 +114,40 @@ Phaser.Board.prototype.attackTile = function attackTile(from, destination, playe
 	}
 	
 	return false;
+}
+
+Phaser.Board.prototype.resolveCombat = function resolveCombat(from, destination) {
+    var attackLosses = 0;
+    var defenseLosses = 0;
+    
+    for (var i = 0; i < from.numTroops; ++i) {
+        if (destination.numTroops === defenseLosses) {
+            break;
+        }
+        
+        var attackRoll = utilities.randomRange(1, 6);
+        var defenseRoll = utilities.randomRange(1, 6);
+    
+        if (attackRoll > defenseRoll) {
+            defenseLosses += 1;   
+        } else if (attackRoll < defenseRoll) {
+            attackLosses += 1;   
+        } else {
+            attackLosses += 1;
+            defenseLosses += 1;
+        }
+    }
+    
+    console.log ("Attack Losses: ", attackLosses);
+    console.log ("Defense Losses: ", defenseLosses);
+    from.numTroops -= attackLosses;
+    destination.numTroops -= defenseLosses;
+}
+
+Phaser.Board.prototype.moveToTile = function moveToTile(from, destination, numTroops) {
+    destination.ownerId = from.ownerId;
+    destination.hex.renderParams.fillColor = from.hex.renderParams.fillColor;
+    destination.numTroops = Math.abs(numTroops);
 }
 
 Phaser.Board.prototype.clickBoard = function clickBoard(pointer, playerId) {
